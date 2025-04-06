@@ -14,7 +14,8 @@ const RootLayout = () => {
   return (
     <>
       <Stack/>
-      {isLogin ? <Redirect href="/auth" /> : <Redirect href="/main" />}
+      {isLogin ? <Redirect href="/auth" /> :
+       <Redirect href="/main" />}
     </>
   );
 };
