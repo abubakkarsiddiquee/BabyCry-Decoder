@@ -10,7 +10,7 @@ const Home = () => {
       <Text style={styles.title}>Welcome to BabyCry Decoder</Text>
       <Text style={styles.subtitle}>Helping new parents understand their baby's cries.</Text>
       
-      <TouchableOpacity style={styles.buttonPrimary} onPress={() => navigation.navigate('signup')}>
+      <TouchableOpacity style={styles.buttonPrimary} onPress={() => navigation.navigate('login')}>
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
       

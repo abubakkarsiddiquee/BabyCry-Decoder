@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
@@ -7,13 +7,39 @@ const Login = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (email === 'test@test.com' && password === 'password') {
-      await AsyncStorage.setItem('userToken', 'logged_in');
-      navigation.replace('Main');
-    } else {
-      alert('Invalid credentials');
+    if (!email || !password) {
+      return alert('Please enter both email and password');
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/login', { // Change URL to match your API
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Save the user token to AsyncStorage
+        await AsyncStorage.setItem('userToken', result.token);
+        navigation.replace('Main'); // Navigate to main screen after login
+      } else {
+        // Handle invalid login
+        Alert.alert('Login Failed', result.message || 'Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Error logging in. Please try again later.');
+    } finally {
+      setIsLoading(false); // Reset loading state
     }
   };
 
@@ -21,22 +47,22 @@ const Login = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
 
-      <TextInput 
+      <TextInput
         style={styles.input}
-        placeholder="Email" 
-        value={email} 
-        onChangeText={setEmail} 
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
       />
-      <TextInput 
+      <TextInput
         style={styles.input}
-        placeholder="Password" 
-        secureTextEntry 
-        value={password} 
-        onChangeText={setPassword} 
+        placeholder="Password"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
       />
 
-      <TouchableOpacity style={styles.buttonPrimary} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+      <TouchableOpacity style={styles.buttonPrimary} onPress={handleLogin} disabled={isLoading}>
+        <Text style={styles.buttonText}>{isLoading ? 'Logging in...' : 'Login'}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('signup')}>

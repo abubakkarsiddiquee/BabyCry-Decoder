@@ -1,145 +1,121 @@
+// App.tsx or App.js
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { SafeAreaView, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import axios from 'axios';
 
-const getAIResponse = (message: string): string => {
-  const lowerMessage = message.toLowerCase();
+const COHERE_API_KEY = 'qAZKjG66h3nle4hR9FCDmassx4boOzu4mPw8vcTF'; // 🔑 Replace this with your actual API key
 
-  if (lowerMessage.includes('crying')) {
-    return 'Baby crying can be due to several reasons. Try feeding or checking if the baby is sleepy.';
-  }
-  if (lowerMessage.includes('hungry')) {
-    return 'If your baby is crying and seems restless, they might be hungry. Offer some milk or food.';
-  }
-  if (lowerMessage.includes('discomfort')) {
-    return 'Check for wet diaper, tight clothes, or if the baby needs a burp.';
-  }
-  if (lowerMessage.includes('tired')) {
-    return 'Try rocking your baby gently or playing soft lullabies.';
-  }
-  if (lowerMessage.includes('belly pain')) {
-    return 'Try gently massaging your baby’s tummy or use a warm compress.';
-  }
-  if (lowerMessage.includes('burping')) {
-    return 'Burping after feeding helps release trapped air. Pat or rub their back gently.';
-  }
-  if (lowerMessage.includes('sleep')) {
-    return 'Ensure a quiet, comfortable space for sleep.';
-  }
-  if (lowerMessage.includes('health tips')) {
-    return 'Regular check-ups, vaccinations, and good nutrition help your baby stay healthy.';
-  }
+export default function App() {
+  const [userInput, setUserInput] = useState('');
+  const [aiResponse, setAiResponse] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  return 'I\'m not sure about that. Try rephrasing or asking something else about your baby!';
-};
+  const getAIResponse = async (message: string) => {
+    setLoading(true);
+    setAiResponse('');
+    try {
+      const response = await axios.post(
+        'https://api.cohere.ai/v1/generate',
+        {
+          model: 'command', // Free tier supports "command" model
+          prompt: message,
+          max_tokens: 100,
+          temperature: 0.7,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${COHERE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-const TeddyChat: React.FC = () => {
-  const [userMessage, setUserMessage] = useState('');
-  const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]);
+      const aiText = response.data?.generations?.[0]?.text?.trim();
+      setAiResponse(aiText || 'No response from AI.');
+    } catch (error) {
+      console.error('API Error:', error);
+      setAiResponse('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleSendMessage = () => {
-    if (userMessage.trim()) {
-      const userMsg = { sender: 'user', text: userMessage };
-      const botMsg = { sender: 'bot', text: getAIResponse(userMessage) };
-
-      setMessages((prev) => [...prev, userMsg, botMsg]);
-      setUserMessage('');
+  const handleSend = () => {
+    if (userInput.trim() !== '') {
+      getAIResponse(userInput);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={styles.container}
-    >
-      <Text style={styles.title}>Teddy Chat</Text>
-
-      <FlatList
-        style={styles.chatBox}
-        data={messages}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={item.sender === 'user' ? styles.userMessage : styles.botMessage}>
-            <Text>{item.text}</Text>
-          </View>
-        )}
-      />
-
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>🧠 AI Chat with Aladin</Text>
       <TextInput
         style={styles.input}
-        value={userMessage}
-        onChangeText={setUserMessage}
-        placeholder="Ask me about your baby..."
+        placeholder="Type your message..."
+        value={userInput}
+        onChangeText={setUserInput}
+        multiline
       />
-
-      <TouchableOpacity style={styles.buttonPrimary} onPress={handleSendMessage}>
-        <Text style={styles.buttonText}>Send</Text>
+      <TouchableOpacity style={styles.button} onPress={handleSend}>
+        <Text style={styles.buttonText}>{loading ? 'Thinking...' : 'Send'}</Text>
       </TouchableOpacity>
-    </KeyboardAvoidingView>
+
+      <ScrollView style={styles.responseBox}>
+        <Text style={styles.label}>AI Response:</Text>
+        <Text style={styles.responseText}>{aiResponse}</Text>
+      </ScrollView>
+    </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F6F9FC',
     padding: 20,
-    justifyContent: 'flex-end',
+    backgroundColor: '#f2f4f8',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 20,
     color: '#333',
-    alignSelf: 'center',
-    marginBottom: 10,
-  },
-  chatBox: {
-    flex: 1,
-    marginBottom: 10,
-  },
-  userMessage: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#D1F7C4',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 5,
-    maxWidth: '80%',
-  },
-  botMessage: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#E4E6EB',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 5,
-    maxWidth: '80%',
+    textAlign: 'center',
   },
   input: {
-    height: 45,
     borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
+    borderRadius: 12,
+    padding: 10,
+    fontSize: 16,
     backgroundColor: '#fff',
-    marginBottom: 10,
+    minHeight: 60,
   },
-  buttonPrimary: {
-    backgroundColor: '#34D399',
-    padding: 14,
-    borderRadius: 8,
+  button: {
+    backgroundColor: '#4c9aff',
+    padding: 12,
+    marginTop: 10,
+    borderRadius: 12,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#FFF',
+    color: '#fff',
+    fontSize: 16,
+  },
+  responseBox: {
+    marginTop: 20,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 15,
+    borderColor: '#ccc',
+    borderWidth: 1,
+  },
+  label: {
     fontWeight: 'bold',
+    marginBottom: 8,
+    fontSize: 16,
+  },
+  responseText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
-
-export default TeddyChat;
