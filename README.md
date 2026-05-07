@@ -1,50 +1,87 @@
-# Welcome to your Expo app 👋
+# BabyCry Decoder – Infant Cry Analysis System
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Branch Structure
 
-## Get started
+### `main`
 
-1. Install dependencies
+Main frontend branch containing the core mobile application features, UI development, and ML integration workflow.
 
-   ```bash
-   npm install
-   ```
+### `auth-feature`
 
-2. Start the app
+Authentication branch focused on user login, signup, JWT authentication, and account management features.
 
-   ```bash
-    npx expo start
-   ```
+### `backend`
 
-In the output, you'll find options to open the app in a
+Backend branch containing server-side development, API implementation, database integration, and model communication logic.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Overview
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+BabyCry Decoder is a machine learning-based mobile application designed to help parents understand infant needs through cry pattern analysis. The system analyzes baby cry audio and predicts possible conditions such as hunger, discomfort, tiredness, or burping using deep learning techniques.
 
-## Get a fresh project
+## Features
 
-When you're ready, run:
+* Infant cry classification using CNN-based deep learning
+* Audio preprocessing and spectrogram generation
+* Real-time cry analysis through a mobile application
+* User authentication and account management
+* Instant care suggestions based on prediction results
 
-```bash
-npm run reset-project
-```
+## Key Contributions
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+* Led the development of an ML-based system to identify infant needs from crying patterns
+* Built and processed an infant audio dataset by converting raw audio into spectrograms for feature extraction
+* Trained and optimized a CNN model using TensorFlow/Keras for cry classification and pattern recognition
+* Integrated the trained model into a React Native mobile application for real-time cry analysis and care suggestions
+* Prepared the project proposal, secured faculty approval, and coordinated the development process within the team
+* Designed a user-focused interface and recommendation system to support parents with newborn care guidance
 
-## Learn more
+## Tech Stack
 
-To learn more about developing your project with Expo, look at the following resources:
+### Machine Learning
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+* Python
+* TensorFlow
+* Keras
+* CNN Architecture
 
-## Join the community
+### Signal Processing
 
-Join our community of developers creating universal apps.
+* Librosa
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Mobile Development
+
+* React Native
+
+### Backend
+
+* Node.js
+* Express.js
+* MySQL
+
+### Tools & Design
+
+* Jira
+* Figma
+* GitHub
+* JWT Authentication
+* Team Collaboration
+
+## System Workflow
+
+1. Collect infant cry audio
+2. Convert audio into spectrograms using Librosa
+3. Train CNN model on processed dataset
+4. Integrate trained model into the mobile application
+5. Predict infant needs from real-time audio input
+6. Provide care suggestions to users
+
+## Future Improvements
+
+* Improve model accuracy with larger datasets
+* Add cloud-based inference support
+* Implement push notifications and parental reminders
+* Enhance recommendation accuracy with advanced deep learning models
+
+## Contributors
+
+Developed as an academic and research-focused project for intelligent newborn care assistance.
